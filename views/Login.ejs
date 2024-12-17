@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url(https://www.moscowmap.ru/_public/article-img/manual/vyvoz-stroitelnogo-musora-v-moskve-kak-izbavitsya-ot-musora2.jpg);
+            background-repeat: no-repeat;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 300px; 
+        }
+        .form-container h2 {
+            margin-bottom: 20px;
+            text-align: center; 
+        }
+        .form-container input[type="text"],
+        .form-container input[type="password"] {
+            width: 92%; 
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-container button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: auto; 
+        }
+        .form-container button:hover {
+            background-color: #218838;
+        }
+        .message {
+            color: red;
+            margin-top: 10px;
+            text-align: center; 
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Вход</h2>
+        <form id="loginForm" method="post" action="/login">
+            <label for="login">Логин:</label>
+            <input type="text" id="login" name="username" required>
+            
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password" required>
+            
+            <button type="submit">Войти</button>
+            <p>Нет аккаунта? <a href="/registration">Зарегистрироваться</a></p>
+            
+            <div class="message" id="message"></div> 
+        </form>
+    </div>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(event) {
+            event.preventDefault(); 
+            const login = document.getElementById('login').value; 
+            const password = document.getElementById('password').value;
+
+            if (!login || !password) {
+                document.getElementById('message').innerText = 'Пожалуйста, заполните все поля.';
+                return;
+            }
+    
+            fetch('/login', {
+    method: 'POST',
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ username: login, password })
+})
+.then(response => {
+    console.log('Response:', response); // Выводим ответ в консоль
+    return response.json(); // Получаем JSON-ответ
+})
+.then(data => {
+    console.log('Response data:', data); // Выводим данные ответа
+    if (data.success) {
+        // Перенаправление в зависимости от ответа сервера
+        window.location.href = data.redirect; // Перенаправление на страницу после успешного входа
+    } else {
+        document.getElementById('message').innerText = data.message; 
+    }
+})
+.catch(error => {
+    console.error('Произошла ошибка:', error);
+    document.getElementById('message').innerText = 'Произошла ошибка при обработке запроса.';
+});
+
+
+        });
+    </script>    
+</body>

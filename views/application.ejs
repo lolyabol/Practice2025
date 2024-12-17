@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форма заявки на клининг</title>
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    background-image: url(https://avatars.mds.yandex.net/i?id=5dedb54967337fbb690387ce5418e206_l-4903727-images-thumbs&n=13);
+    background-repeat: no-repeat;
+    background-size: cover;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    color: #333; 
+    }
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.9);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    width: 90%;
+    max-width: 30vw; 
+    max-height: 90vh; 
+    overflow-y: auto; 
+}
+
+h1 {
+    margin-bottom: 20px;
+    font-size: 1.8rem; 
+}
+
+h2 {
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+}
+
+h3 {
+    margin-bottom: 20px;
+    font-size: 1.5rem; 
+}
+
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px; 
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem; 
+}
+
+.registration-form {
+    display: flex;
+    flex-direction: column;
+    width: 100%; 
+}
+
+.registration-form label {
+    margin-bottom: 5px;
+}
+
+.registration-form input[type="text"],
+.registration-form input[type="tel"],
+.registration-form input[type="email"],
+.registration-form input[type="password"],
+.registration-form input[type="date"],
+.registration-form input[type="time"] {
+    width: 95%; 
+    padding: 10px;
+    margin-bottom: 15px; 
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+.registration-form button {
+    background-color: #28a745;
+    color: white;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+}
+.registration-form button:hover {
+    background-color: #218838; 
+}
+.message {
+    color: red;
+    margin-top: 10px;
+}
+.goodMessage {
+    color: green;
+    margin-top: 10px;
+}
+@media (max-width: 390px) {
+    h1 {
+        font-size: 1.5rem; 
+    }
+    
+    h2 {
+        font-size: 1.25rem; 
+    }
+}
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Форма заявки на клининг "Мой Не Сам"</h1>
+    <form class="registration-form" id="cleaningForm" onsubmit="addRequest(event)">
+        <label for="fullName">ФИО:</label>
+        <input type="text" id="fullName" name="fullName" required>
+
+        <label for="address">Адрес:</label>
+        <input type="text" id="address" name="address" required>
+
+        <label for="date">Дата:</label>
+        <input type="date" id="date" name="date" required>
+
+        <label for="time">Время:</label>
+        <input type="time" id="time" name="time" required>
+
+        <label for="pay">Желаемый способ оплаты:</label>
+        <select id="pay" name="pay" required>
+            <option value="">Выберите способ оплаты</option>
+            <option value="Наличные">Наличные</option>
+            <option value="Банковская карта">Банковская карта</option>
+        </select>
+        <label for="services">Услуги:</label>
+        <select id="services" name="services" required>
+            <option value="">Выберите услугу</option>
+            <option value="Общий клининг">Общий клининг</option>
+            <option value="Генеральная уборка">Генеральная уборка</option>
+            <option value="Послестроительная уборка">Послестроительная уборка</option>
+            <option value="Химчистка ковров и мебели">Химчистка ковров и мебели</option>
+        </select>
+        <button type="submit">Отправить заявку</button>
+    </form>
+    <h2>Список заявок</h2>
+    <div id="requestsContainer"></div>
+</div>
+<script>
+    document.getElementById('cleaningForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const fullName = document.getElementById('fullName').value.trim();
+        const address = document.getElementById('address').value.trim();
+        const date = document.getElementById('date').value;
+        const time = document.getElementById('time').value;
+        const services = document.getElementById('services').value;
+        const pay = document.getElementById('pay').value;
+
+        const newRequest = {
+            fullName,
+            address,
+            date,
+            time,
+            services,
+            pay
+        };
+
+        fetch('/api/requests', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newRequest)
+        })
+        .then(response => response.json())
+        .then(data => {
+            loadRequests(); 
+            document.getElementById('cleaningForm').reset();
+        })
+        .catch(error => console.error('Ошибка:', error));
+    });
+
+    function loadRequests() {
+    fetch('/api/requests')
+        .then(response => response.json())
+        .then(data => {
+            const requestsContainer = document.getElementById('requestsContainer');
+            requestsContainer.innerHTML = '';
+
+            // Проверка на массив
+            if (!Array.isArray(data)) {
+                console.error('Полученные данные не являются массивом:', data);
+                requestsContainer.innerHTML = '<p>Ошибка при загрузке заявок.</p>';
+                return;
+            }
+
+            if (data.length === 0) {
+                requestsContainer.innerHTML = '<p>Нет заявок.</p>';
+                return;
+            }
+
+            data.forEach(request => {
+                const requestDiv = document.createElement('div');
+                requestDiv.classList.add('request');
+
+                requestDiv.innerHTML = `
+    <h3>${request.fullName}</h3>
+    <p>Адрес: ${request.address}</p>
+    <p>Дата: ${request.date}</p>
+    <p>Время: ${request.time}</p>
+    <p>Услуги: ${request.services}</p>
+    <p>Оплата: ${request.pay}</p>
+    <hr />
+`;
+
+                
+                requestsContainer.appendChild(requestDiv); 
+            });
+        })
+        .catch(error => console.error('Ошибка:', error));
+}
+
+
+    window.onload = loadRequests;
+</script>
+
+</body>
+</html>

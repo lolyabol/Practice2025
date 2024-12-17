@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-image: url(https://p2.zoon.ru/preview/nQeYIEa8TbmH3kes5Eh0Mw/2400x1500x75/1/8/7/original_5c131802c2022103107510e1_5eed9b35d7df6.jpg);
+            background-repeat: no-repeat;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .registration-form {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            background-color: rgb(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .registration-form h2 {
+            margin-bottom: 20px;
+        }
+        .registration-form input[type="text"],
+        .registration-form input[type="tel"],
+        .registration-form input[type="email"],
+        .registration-form input[type="password"] {
+            width: 98%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .registration-form button {
+            background-color: #28a745;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: auto;
+        }
+        .registration-form button:hover {
+            background-color: #218838;
+        }
+        .message {
+            color: red;
+            margin-top: 10px;
+        }
+        .goodMessage {
+            color: green;
+            margin-top: 10px;
+        }
+        @media (max-width: 390px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            h2 {
+                font-size: 1.25rem; 
+            }
+            button {
+                font-size: 1rem; 
+                padding: 10px;
+            }
+            input {
+                font-size: 1rem; 
+                padding: 10px;
+            }
+            
+        }
+        @media (orientation: landscape) {
+            .registration-form {
+                min-height: auto; 
+                max-height: 60vh; 
+                overflow-y: auto; 
+            }
+            h1 {
+                font-size: 2.5rem; 
+            }
+            h2 {
+                font-size: 2rem; 
+            }
+            button {
+                font-size: 1.2rem; 
+                padding: 12px;
+            }
+            textarea, input {
+                font-size: 1.2rem; 
+                padding: 12px; 
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="registration-form">
+        <h2>Регистрация</h2>
+        <form action="/registration" method="POST">
+            <label for="username">Имя пользователя:</label>
+            <input type="text" id="username" name="username" required>
+            
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" required>
+            
+            <label for="password">Пароль:</label>
+            <input type="password" id="password" name="password" required>
+            
+            <button type="submit">Зарегистрироваться</button>
+            <p>Есть аккаунт? <a href="/login">Войти</a></p>
+            
+            <div class="message" id="error-message"></div>
+            <div class="goodMessage" id="success-message"></div>
+        </form>
+    </div>
+    <script>
+       document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('registrationForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        let username = event.target.elements.username.value.trim();
+        let email = event.target.elements.email.value.trim();
+        let password = event.target.elements.password.value.trim();
+
+        // Исправлено условие проверки
+        if (!username || !email || !password) {
+            showMessage('Пожалуйста, заполните все поля.', false);
+            return; 
+        }
+
+        // Формирование тела запроса (добавлены кавычки)
+        fetch('/registration', { 
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: username=`${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
+        })
+        .then(response => response.json()) // Изменено на json для обработки JSON-ответов
+        .then(data => {
+            if (data.success) {
+                showMessage('Регистрация успешна!', true);
+                window.location.href = '/login'; // Исправлено на '/login' для соответствия маршруту
+            } else {
+                showMessage(data.message, false); // Передан второй аргумент для отображения ошибки
+            }
+        })
+        .catch(error => console.error('Ошибка:', error));
+    });
+});
+
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Администратор клининговых заявок "Мой Не Сам"</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: rgb(153, 153, 153);
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: rgb(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
+            text-align: center;
+        }
+        form {
+            display: none;
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            margin-top: 10px;
+        }
+        input, select {
+            padding: 10px;
+            margin-top: 5px;
+        }
+        button {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            background: #e9ecef;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+        }
+        @media (max-width: 390px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            h2 {
+                font-size: 1.25rem; 
+            }
+            button {
+                font-size: 1rem; 
+                padding: 10px;
+            }
+            input {
+                font-size: 1rem; 
+                padding: 10px;
+            }
+            
+        }
+        @media (orientation: landscape) {
+            .registration-form {
+                min-height: 60vh; 
+                max-height: 60vh; 
+                overflow-y: auto; 
+            }
+            h1 {
+                font-size: 2.5rem; 
+            }
+            h2 {
+                font-size: 2rem; 
+            }
+            button {
+                font-size: 1.2rem; 
+                padding: 12px;
+            }
+            textarea, input {
+                font-size: 1.2rem; 
+                padding: 12px; 
+            }
+        }
+    </style>
+</head>
+<body> 
+    <h1>Заявки пользователей</h1>
+    <ul id="requestList"></ul>
+<script>
+document.addEventListener('DOMContentLoaded', loadRequests);
+
+// Функция для отправки новой заявки
+function submitRequest(requestData) {
+    fetch('/api/requests', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestData),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Ошибка сети: ' + response.statusText);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Заявка отправлена:', data);
+        loadRequests(); // Обновляем список заявок
+    })
+    .catch(error => {
+        console.error('Ошибка при отправке заявки:', error);
+    });
+}
+
+// Функция для обновления статуса заявки (принять или отклонить)
+function updateRequestStatus(requestId, newStatus) {
+    fetch(`/api/requests/${requestId}/status`, { // Убедитесь, что путь правильный
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }),
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Ошибка сети: ' + response.statusText);
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Статус обновлен:', data);
+        loadRequests(); // Обновляем список заявок
+    })
+    .catch(error => {
+        console.error('Ошибка при обновлении статуса:', error);
+    });
+}
+
+// Функция для загрузки заявок
+function loadRequests() {
+    fetch('/api/requests')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Сеть не в порядке: ' + response.statusText);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const requestList = document.getElementById('requestList');
+            requestList.innerHTML = ''; // Очищаем список перед обновлением
+
+            data.forEach(request => {
+                const li = document.createElement('li');
+                li.textContent = `${request.fullName} - ${request.date} ${request.time} (Статус: ${request.status})`;
+
+                const acceptButton = document.createElement('button');
+                acceptButton.textContent = 'Принять';
+                acceptButton.onclick = () => updateRequestStatus(request.id, 'Принята');
+
+                const rejectButton = document.createElement('button');
+                rejectButton.textContent = 'Отклонить';
+                rejectButton.onclick = () => updateRequestStatus(request.id, 'Отклонена');
+
+                li.appendChild(acceptButton);
+                li.appendChild(rejectButton);
+                requestList.appendChild(li);
+            });
+        })
+        .catch(error => {
+            console.error('Ошибка:', error);
+        });
+}
+
+// Инициализация загрузки заявок при загрузке страницы
+document.addEventListener('DOMContentLoaded', loadRequests);
+
+
+</script>
+
+</body>

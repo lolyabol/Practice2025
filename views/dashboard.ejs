@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Панель управления</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        p {
+            font-size: 1.2em;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        a {
+            text-decoration: none;
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        a:hover {
+            background-color: #218838;
+        }
+
+    </style>
+</head>
+<body>
+    <h1>Панель управления</h1>
+    <p><strong>Имя пользователя:</strong> <%= user.username %></p>
+    <p><strong>ID пользователя:</strong> <%= user.id %></p>
+    <a href="/logout">Выйти</a>
+</body>
+</html>
