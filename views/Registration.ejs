@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-image: url(https://p2.zoon.ru/preview/nQeYIEa8TbmH3kes5Eh0Mw/2400x1500x75/1/8/7/original_5c131802c2022103107510e1_5eed9b35d7df6.jpg);
+            background-image: url('https://avatars.dzeninfra.ru/get-zen_doc/9529784/pub_644fa3364581986bf410559d_644fa36d0726a464170d6cfd/scale_1200');
             background-repeat: no-repeat;
             background-size: cover;
             display: flex;
@@ -127,13 +127,11 @@
         let email = event.target.elements.email.value.trim();
         let password = event.target.elements.password.value.trim();
 
-        // Исправлено условие проверки
         if (!username || !email || !password) {
             showMessage('Пожалуйста, заполните все поля.', false);
             return; 
         }
 
-        // Формирование тела запроса (добавлены кавычки)
         fetch('/registration', { 
             method: 'POST',
             headers: {
@@ -141,19 +139,18 @@
             },
             body: username=`${encodeURIComponent(username)}&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`
         })
-        .then(response => response.json()) // Изменено на json для обработки JSON-ответов
+        .then(response => response.json()) 
         .then(data => {
             if (data.success) {
                 showMessage('Регистрация успешна!', true);
-                window.location.href = '/login'; // Исправлено на '/login' для соответствия маршруту
+                window.location.href = '/login'; 
             } else {
-                showMessage(data.message, false); // Передан второй аргумент для отображения ошибки
+                showMessage(data.message, false); 
             }
         })
         .catch(error => console.error('Ошибка:', error));
     });
 });
-
 
     </script>
 </body>

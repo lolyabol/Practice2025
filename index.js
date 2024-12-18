@@ -14,9 +14,10 @@ app.use(session({
     saveUninitialized: true,
     cookie: { maxAge: 60 * 60 * 1000 } 
 }));
-
+app.use(express.static(path.join(__dirname, 'public'))); 
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
@@ -50,17 +51,17 @@ const db = new sqlite3.Database('./users.db', (err) => {
 
 const dbGet = promisify(db.get).bind(db);
 const dbRun = promisify(db.run).bind(db);
-const dbAll = promisify(db.all).bind(db); // Добавьте эту строку
+const dbAll = promisify(db.all).bind(db);
 
 
 app.get('/', (req, res) => res.redirect('/registration'));
 
 app.get('/registration', (req, res) => {
-    res.render('Registration'); 
+    res.render('Registration', { pathToImage: '/images/index.jpg' }); 
 });
 
 app.get('/registration', (req, res) => {
-    res.render('Registration'); 
+    res.render('registration'); 
 });
 
 app.post('/registration', (req, res) => {
@@ -111,8 +112,6 @@ app.post('/registration', (req, res) => {
         });
 });
 
-
-
 app.get('/login', (req, res) => {
     res.render('Login'); 
 });
@@ -152,10 +151,6 @@ app.post('/login', async (req, res) => {
     }
 });
 
-
-
-
-// Защищенный маршрут (доступен только при наличии сессии)
 function ensureAuthenticated(req, res, next) {
     if (req.session.user) {
         return next();
@@ -170,16 +165,15 @@ app.get('/dashboard', ensureAuthenticated, (req, res) => {
 app.get('/logout', (req, res) => {
     res.render('logout');
 });
-// Маршрут выхода
+
 app.post('/logout', (req, res) => {
     req.session.destroy(err => {
         if (err) {
             return res.status(500).json({ success: false, message: 'Ошибка при выходе' });
         }
-        res.redirect('/api/requests'); // Перенаправление на страницу входа или другую страницу
+        res.redirect('/api/requests'); 
     });
 });
-
 
 app.get('/application', ensureAuthenticated, (req, res) => {
     res.render('application');
@@ -222,10 +216,9 @@ app.post('/api/requests', async (req, res) => {
     }
 });
 
-// Обновление статуса заявки
 app.put('/api/requests/:id/status', ensureAuthenticated, async (req, res) => {
     const id = req.params.id;
-    const { status } = req.body; // Ожидаем статус в теле запроса
+    const { status } = req.body; 
 
     try {
         const request = await db.get('SELECT * FROM requests WHERE id = ?', [id]);
@@ -233,7 +226,6 @@ app.put('/api/requests/:id/status', ensureAuthenticated, async (req, res) => {
             return res.status(404).json({ success: false, message: 'Заявка не найдена' });
         }
 
-        // Обновляем статус заявки
         await db.run('UPDATE requests SET status = ? WHERE id = ?', [status, id]);
         res.json({ success: true });
     } catch (err) {
@@ -242,7 +234,6 @@ app.put('/api/requests/:id/status', ensureAuthenticated, async (req, res) => {
     }
 });
 
-// Обработка принятия заявки
 app.put('/api/requests/:id/accept', ensureAuthenticated, async (req, res) => {
     const id = req.params.id;
     try {
@@ -258,7 +249,6 @@ app.put('/api/requests/:id/accept', ensureAuthenticated, async (req, res) => {
     }
 });
 
-// Обработка отклонения заявки
 app.put('/api/requests/:id/reject', ensureAuthenticated, async (req, res) => {
     const id = req.params.id;
     try {

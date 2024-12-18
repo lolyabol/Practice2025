@@ -7,7 +7,7 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-image: url(https://www.moscowmap.ru/_public/article-img/manual/vyvoz-stroitelnogo-musora-v-moskve-kak-izbavitsya-ot-musora2.jpg);
+            background-image: url('https://avatars.dzeninfra.ru/get-zen_doc/751940/pub_62e7ec2f9141177fbfb9fb5d_62e7ec3e9141177fbfba027d/scale_1200');
             background-repeat: no-repeat;
             background-size: cover;
             display: flex;
@@ -92,14 +92,13 @@
     body: JSON.stringify({ username: login, password })
 })
 .then(response => {
-    console.log('Response:', response); // Выводим ответ в консоль
-    return response.json(); // Получаем JSON-ответ
+    console.log('Response:', response); 
+    return response.json(); 
 })
 .then(data => {
-    console.log('Response data:', data); // Выводим данные ответа
+    console.log('Response data:', data); 
     if (data.success) {
-        // Перенаправление в зависимости от ответа сервера
-        window.location.href = data.redirect; // Перенаправление на страницу после успешного входа
+        window.location.href = data.redirect; 
     } else {
         document.getElementById('message').innerText = data.message; 
     }
@@ -108,8 +107,6 @@
     console.error('Произошла ошибка:', error);
     document.getElementById('message').innerText = 'Произошла ошибка при обработке запроса.';
 });
-
-
         });
     </script>    
 </body>

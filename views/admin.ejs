@@ -7,103 +7,78 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: rgb(153, 153, 153);
+            background-color: rgb(103, 141, 173);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            color: #333; 
         }
         .container {
-            max-width: 600px;
-            margin: auto;
-            background: rgb(255, 255, 255, 0.9);
-            padding: 20px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        h1, h2 {
-            text-align: center;
-        }
-        form {
-            display: none;
             display: flex;
             flex-direction: column;
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            width: auto;
+            max-height: 90vh; 
+            overflow-y: auto; 
         }
-        label {
-            margin-top: 10px;
+        h1 {
+            margin-bottom: 20px;
+            font-size: 1.8rem; 
         }
-        input, select {
-            padding: 10px;
-            margin-top: 5px;
+        ul {
+            list-style-type: none; 
+            padding: 0; 
+            width: 100%; 
+        }
+        li {
+            background-color: #f8f9fa; 
+            margin-bottom: 10px; 
+            padding: 10px; 
+            border-radius: 4px; 
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); 
         }
         button {
-            margin-top: 15px;
-            padding: 10px;
             background-color: #28a745;
-            color: white;
-            border: none;
-            border-radius: 5px;
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            padding: 10px 15px; 
+            margin-top: 10px;
+            margin-left: 10px; 
+            cursor: pointer; 
         }
+
         button:hover {
             background-color: #218838;
         }
-        ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        li {
-            background: #e9ecef;
-            margin: 10px 0;
-            padding: 10px;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-        }
+
         @media (max-width: 390px) {
             h1 {
-                font-size: 1.5rem;
-            }
-            h2 {
-                font-size: 1.25rem; 
-            }
-            button {
-                font-size: 1rem; 
-                padding: 10px;
-            }
-            input {
-                font-size: 1rem; 
-                padding: 10px;
-            }
-            
-        }
-        @media (orientation: landscape) {
-            .registration-form {
-                min-height: 60vh; 
-                max-height: 60vh; 
-                overflow-y: auto; 
-            }
-            h1 {
-                font-size: 2.5rem; 
-            }
-            h2 {
-                font-size: 2rem; 
-            }
-            button {
-                font-size: 1.2rem; 
-                padding: 12px;
-            }
-            textarea, input {
-                font-size: 1.2rem; 
-                padding: 12px; 
+                font-size: 1.5rem; 
             }
         }
     </style>
 </head>
-<body> 
-    <h1>Заявки пользователей</h1>
-    <ul id="requestList"></ul>
+<body>
+    <div class="container">
+        <h1>Заявки пользователей</h1>
+        <ul id="requestList">
+            <li>Заявка 1</li>
+            <li>Заявка 2</li>
+            <li>Заявка 3</li>
+        </ul>
+    </div>
 <script>
 document.addEventListener('DOMContentLoaded', loadRequests);
 
-// Функция для отправки новой заявки
 function submitRequest(requestData) {
     fetch('/api/requests', {
         method: 'POST',
@@ -120,16 +95,15 @@ function submitRequest(requestData) {
     })
     .then(data => {
         console.log('Заявка отправлена:', data);
-        loadRequests(); // Обновляем список заявок
+        loadRequests(); 
     })
     .catch(error => {
         console.error('Ошибка при отправке заявки:', error);
     });
 }
 
-// Функция для обновления статуса заявки (принять или отклонить)
 function updateRequestStatus(requestId, newStatus) {
-    fetch(`/api/requests/${requestId}/status`, { // Убедитесь, что путь правильный
+    fetch(`/api/requests/${requestId}/status`, { 
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
@@ -144,14 +118,13 @@ function updateRequestStatus(requestId, newStatus) {
     })
     .then(data => {
         console.log('Статус обновлен:', data);
-        loadRequests(); // Обновляем список заявок
+        loadRequests(); 
     })
     .catch(error => {
         console.error('Ошибка при обновлении статуса:', error);
     });
 }
 
-// Функция для загрузки заявок
 function loadRequests() {
     fetch('/api/requests')
         .then(response => {
@@ -162,7 +135,7 @@ function loadRequests() {
         })
         .then(data => {
             const requestList = document.getElementById('requestList');
-            requestList.innerHTML = ''; // Очищаем список перед обновлением
+            requestList.innerHTML = ''; 
 
             data.forEach(request => {
                 const li = document.createElement('li');
@@ -186,9 +159,7 @@ function loadRequests() {
         });
 }
 
-// Инициализация загрузки заявок при загрузке страницы
 document.addEventListener('DOMContentLoaded', loadRequests);
-
 
 </script>
 

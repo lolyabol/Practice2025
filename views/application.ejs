@@ -7,7 +7,7 @@
     <style>
         body {
     font-family: Arial, sans-serif;
-    background-image: url(https://avatars.mds.yandex.net/i?id=5dedb54967337fbb690387ce5418e206_l-4903727-images-thumbs&n=13);
+    background-image: url('https://cdn.shopify.com/s/files/1/0066/2359/2548/files/House_owner_Cleaning_the_floor_with_salt_water_in_her_new_home.png?v=1652970077');
     background-repeat: no-repeat;
     background-size: cover;
     display: flex;
@@ -188,7 +188,6 @@ select {
             const requestsContainer = document.getElementById('requestsContainer');
             requestsContainer.innerHTML = '';
 
-            // Проверка на массив
             if (!Array.isArray(data)) {
                 console.error('Полученные данные не являются массивом:', data);
                 requestsContainer.innerHTML = '<p>Ошибка при загрузке заявок.</p>';
@@ -212,9 +211,7 @@ select {
     <p>Услуги: ${request.services}</p>
     <p>Оплата: ${request.pay}</p>
     <hr />
-`;
-
-                
+`;  
                 requestsContainer.appendChild(requestDiv); 
             });
         })
